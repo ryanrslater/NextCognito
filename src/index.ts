@@ -14,7 +14,7 @@ import {
   ConfirmSignUpRequest,
   InitiateAuthCommandOutput,
   ConfirmSignUpCommandOutput,
-  GetUserCommandInput,
+  GetUserCommandInput, ResendConfirmationCodeCommandInput
 
 } from '@aws-sdk/client-cognito-identity-provider'
 
@@ -106,6 +106,50 @@ class CognitoAuth {
     this.removeToken(NextApiResponse)
   }
 
+  async signUp(Username: string | undefined, Password: string | undefined, email: string | undefined): Promise<ConfirmSignUpCommandOutput> {
+    if (!Username) throw new Error('Missing username')
+    if (!Password) throw new Error('Missing password')
+    if (!email) throw new Error('Missing email')
+
+    const params: SignUpCommandInput = {
+      ClientId: this.clientId,
+      Username,
+      Password,
+      UserAttributes: [
+        {
+          Name: 'email',
+          Value: email,
+        }
+      ]
+    }
+    const signUp = await this.client.signUp(params)
+
+    return signUp
+  }
+
+  async confirmSignUp(Username: string | undefined, ConfirmationCode: string | undefined): Promise<ConfirmSignUpCommandOutput> {
+    if (!Username) throw new Error('Missing username')
+    if (!ConfirmationCode) throw new Error('Missing code')
+
+    const params: ConfirmSignUpRequest = {
+      ClientId: this.clientId,
+      Username,
+      ConfirmationCode,
+    }
+    const confirmSignUp = await this.client.confirmSignUp(params)
+    return confirmSignUp
+  }
+
+  async resendConfirmationCode(Username: string | undefined): Promise<ConfirmSignUpCommandOutput> {
+    if (!Username) throw new Error('Missing username')
+
+    const params: ResendConfirmationCodeCommandInput = {
+      ClientId: this.clientId,
+      Username,
+    }
+    const confirmSignUp = await this.client.resendConfirmationCode(params)
+    return confirmSignUp
+  }
 }
 
 export default CognitoAuth
