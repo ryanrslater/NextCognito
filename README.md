@@ -15,3 +15,12 @@ NEXT_COGNITO_CLIENT_ID=The client id of your Cognito user pool
 NEXT_COGNITO_ACCESS_KEY_ID=Your IAM access key that has cognito permissions
 NEXT_COGNITO_SECRET_ACCESS_KEY=You IAM seccress access key
 ```
+
+## Create your Next endpoint where you want to use NextCognito
+eg
+`/api/auth/signin`
+```
+import "NextCognito" from "NextCognito"
+
+const new nextcognito = new NextCognito()
+```
