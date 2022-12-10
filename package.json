@@ -1,0 +1,28 @@
+{
+  "name": "nextcognito",
+  "version": "1.0.0",
+  "description": "Cognito Auth adapter for Nextjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ryanrslater/NextCognito.git"
+  },
+  "keywords": [
+    "next",
+    "nextjs",
+    "cognito",
+    "auth"
+  ],
+  "author": "ryanrslater",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ryanrslater/NextCognito/issues"
+  },
+  "homepage": "https://github.com/ryanrslater/NextCognito#readme",
+  "dependencies": {
+    "cookies": "^0.8.0"
+  }
+}
