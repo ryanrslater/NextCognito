@@ -59,7 +59,16 @@ class CognitoAuth {
       document.cookie = `${this.tokenName}=${token}; HttpOnly; Path=/; Max-Age=${expires}`
     }
   }
-    
+
+  private removeToken(NextApiResponse?: NextApiResponse) {
+    if (NextApiResponse) {
+      NextApiResponse.setHeader('Set-Cookie', `${this.tokenName}=; HttpOnly; Path=/; Max-Age=0`)
+    } else {
+      document.cookie = `${this.tokenName}=; HttpOnly; Path=/; Max-Age=0`
+    }
+  }
+
+
 
   async initiateAuth(USERNAME: string | undefined, PASSWORD: string | undefined, NextApiResponse: NextApiResponse): Promise<InitiateAuthCommandOutput> {
 
@@ -79,7 +88,7 @@ class CognitoAuth {
     return await this.client.initiateAuth(params)
   }
 
-  async getServerSideUser(context: GetServerSidePropsContext): Promise<{username: string | null, sub: string | null}> {
+  async getServerSideUser(context: GetServerSidePropsContext): Promise<{ username: string | null, sub: string | null }> {
     const token = context.req.cookies[this.tokenName]
     if (!token) throw new Error('Missing token')
     const params: GetUserCommandInput = {
@@ -89,8 +98,14 @@ class CognitoAuth {
 
     const sub = user.UserAttributes?.find((attr) => attr.Name == 'sub')
 
-    return {sub: sub?.Value || null, username: user.Username || null}
+    return { sub: sub?.Value || null, username: user.Username || null }
   }
+
+  async signOut(NextApiRequest: NextApiRequest, NextApiResponse: NextApiResponse) {
+    await this.client.globalSignOut({ AccessToken: NextApiRequest.cookies[this.tokenName] })
+    this.removeToken(NextApiResponse)
+  }
+
 }
 
 export default CognitoAuth
