@@ -14,7 +14,8 @@ import {
   ConfirmSignUpRequest,
   InitiateAuthCommandOutput,
   ConfirmSignUpCommandOutput,
-  GetUserCommandInput
+  GetUserCommandInput,
+
 } from '@aws-sdk/client-cognito-identity-provider'
 
 class CognitoAuth {
@@ -49,6 +50,33 @@ class CognitoAuth {
 
     this.client = new CognitoIdentityProvider({ region: this.region, credentials: { accessKeyId: this.accessKeyId, secretAccessKey: this.secretAccessKey } })
 
+  }
+
+  private setToken(token: string, expires?: number, NextApiResponse?: NextApiResponse) {
+    if (NextApiResponse) {
+      NextApiResponse.setHeader('Set-Cookie', `${this.tokenName}=${token}; HttpOnly; Path=/; Max-Age=${expires}`)
+    } else {
+      document.cookie = `${this.tokenName}=${token}; HttpOnly; Path=/; Max-Age=${expires}`
+    }
+  }
+    
+
+  async initiateAuth(USERNAME: string | undefined, PASSWORD: string | undefined, NextApiResponse: NextApiResponse): Promise<InitiateAuthCommandOutput> {
+
+    if (!USERNAME) throw new Error('Missing username')
+    if (!PASSWORD) throw new Error('Missing password')
+
+    const params: InitiateAuthCommandInput = {
+      AuthFlow: AuthFlowType.USER_PASSWORD_AUTH,
+      ClientId: this.clientId,
+      AuthParameters: {
+        USERNAME,
+        PASSWORD,
+      }
+    }
+    const initiateAuth = await this.client.initiateAuth(params)
+    initiateAuth.AuthenticationResult?.AccessToken && this.setToken(initiateAuth.AuthenticationResult.AccessToken, initiateAuth.AuthenticationResult.ExpiresIn, NextApiResponse)
+    return await this.client.initiateAuth(params)
   }
 }
 
