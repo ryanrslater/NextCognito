@@ -78,6 +78,19 @@ class CognitoAuth {
     initiateAuth.AuthenticationResult?.AccessToken && this.setToken(initiateAuth.AuthenticationResult.AccessToken, initiateAuth.AuthenticationResult.ExpiresIn, NextApiResponse)
     return await this.client.initiateAuth(params)
   }
+
+  async getServerSideUser(context: GetServerSidePropsContext): Promise<{username: string | null, sub: string | null}> {
+    const token = context.req.cookies[this.tokenName]
+    if (!token) throw new Error('Missing token')
+    const params: GetUserCommandInput = {
+      AccessToken: token,
+    }
+    const user = await this.client.getUser(params)
+
+    const sub = user.UserAttributes?.find((attr) => attr.Name == 'sub')
+
+    return {sub: sub?.Value || null, username: user.Username || null}
+  }
 }
 
 export default CognitoAuth
