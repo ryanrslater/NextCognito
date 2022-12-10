@@ -1,6 +1,6 @@
 {
   "name": "nextcognito",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Cognito Auth adapter for Nextjs",
   "main": "src/index.js",
   "scripts": {
