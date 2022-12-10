@@ -1,17 +1,15 @@
 import type {
-  NextApiHandler,
-  GetServerSidePropsContext,
-  GetServerSidePropsResult,
   NextApiRequest,
   NextApiResponse,
+  GetServerSidePropsContext,
 } from "next";
 
 import {
   AuthFlowType,
-  CognitoIdentityProvider,
-  InitiateAuthCommandInput,
   SignUpCommandInput,
   ConfirmSignUpRequest,
+  CognitoIdentityProvider,
+  InitiateAuthCommandInput,
   InitiateAuthCommandOutput,
   ConfirmSignUpCommandOutput,
   GetUserCommandInput, ResendConfirmationCodeCommandInput
