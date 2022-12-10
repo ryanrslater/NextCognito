@@ -148,6 +148,19 @@ class CognitoAuth {
     const confirmSignUp = await this.client.resendConfirmationCode(params)
     return confirmSignUp
   }
+
+  async authenticate(NextApiRequest: NextApiRequest): Promise<{ username: string | undefined, sub: string | undefined }> {
+    const token = NextApiRequest.cookies[this.tokenName]
+    if (!token) throw new Error('Missing token')
+    const params: GetUserCommandInput = {
+      AccessToken: token,
+    }
+    const user = await this.client.getUser(params)
+    if (!user.Username) throw new Error('Missing username')
+    if (!user.UserAttributes?.find((attr) => attr.Name == 'sub')) throw new Error('Missing sub')
+    const sub = user.UserAttributes?.find((attr) => attr.Name == 'sub')
+    return { username: user.Username, sub: sub?.Value }
+  }
 }
 
 export default CognitoAuth
