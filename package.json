@@ -24,5 +24,11 @@
   "homepage": "https://github.com/ryanrslater/NextCognito#readme",
   "dependencies": {
     "cookies": "^0.8.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.4"
+  },
+  "peerDependencies": {
+    "next": ">=10"
   }
 }
