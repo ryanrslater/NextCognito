@@ -25,14 +25,14 @@ Otherwise the Next Cognito error messages are related to missing environment var
 ## Create your Next endpoint where you want to use NextCognito
 
 ```
-import "NextCognito" from "NextCognito"
+import NextCognito from 'nextcognito'
 
 const nextcognito = new NextCognito()
 ```
 
 ### Sign in
 ```
-import "NextCognito" from "NextCognito"
+import NextCognito from 'nextcognito'
 
 export default async function handler(
   req: NextApiRequest,
@@ -59,7 +59,7 @@ try {
 
 ### Sign out
 ```
-import "NextCognito" from "NextCognito"
+import NextCognito from 'nextcognito'
 
 export default async function handler(
   req: NextApiRequest,
@@ -86,7 +86,7 @@ try {
 
 ### Sign up
 ```
-import "NextCognito" from "NextCognito"
+import NextCognito from 'nextcognito'
 
 export default async function handler(
   req: NextApiRequest,
@@ -115,7 +115,7 @@ try {
 Cognito requires users to confirm their accounts before they can be used
 
 ```
-import "NextCognito" from "NextCognito"
+import NextCognito from 'nextcognito'
 
 export default async function handler(
   req: NextApiRequest,
@@ -136,6 +136,82 @@ try {
      //Handle the return how ever you like
 
     return res.status(400).json({error})
+    }
+}
+```
+
+### Resend confirmation code
+```
+import NextCognito from 'nextcognito'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+try {
+    await nextcognito.resendConfirmationCode(username)
+
+    //Handle the return how ever you like
+
+    return res.status(201).json({success: true})
+    
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error})
+    }
+}
+```
+
+### Authenticate
+
+This method is designed to authenticate an API and point and return a user
+```
+import NextCognito from 'nextcognito'
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+let user;
+
+try {
+    user = await nextcognito.authenticate(req)
+    
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error: 'Unauthenticated'})
+    }
+
+return res.status(201).json({success: true})
+}
+```
+
+### Get serverside user
+
+```
+import NextCognito from 'nextcognito'
+
+const getServerSideProps = async (context) => {
+    const nextcognito = new NextCognito()
+
+    try {
+        const user = await nextcognito.getServerSideUser(context)
+        return {
+            props: {
+                sub: user.sub,
+                username: user.username
+            }
+        }
     }
 }
 ```
