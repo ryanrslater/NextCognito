@@ -83,3 +83,59 @@ try {
     }
 }
 ```
+
+### Sign up
+```
+import "NextCognito" from "NextCognito"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+try {
+    await nextcognito.signUp(username, password, email)
+
+    //Handle the return how ever you like
+
+    return res.status(201).json({success: true})
+    
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error})
+    }
+}
+```
+
+### Confirm sign up
+Cognito requires users to confirm their accounts before they can be used
+
+```
+import "NextCognito" from "NextCognito"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+try {
+    await nextcognito.confirmSignUp(username, code)
+
+    //Handle the return how ever you like
+
+    return res.status(201).json({success: true})
+    
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error})
+    }
+}
+```
