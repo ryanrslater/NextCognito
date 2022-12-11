@@ -53,12 +53,18 @@ class CognitoAuth {
   }
 
   private setToken(token: string, expires: number, NextApiResponse?: NextApiResponse) {
+    const expiresDate = new Date()
+    expiresDate.setTime(expiresDate.getTime() + expires * 1000)
     const cookieOptions: CookieSerializeOptions = {
+      maxAge: expires,
       httpOnly: true,
+      expires: expiresDate,
       path: '/',
       sameSite: 'lax',
       secure: process.env.VERCEL_ENV === 'production'
     }
+    
+    
     if (NextApiResponse) {
       NextApiResponse.setHeader('Set-Cookie', cookie.serialize(this.tokenName, token, cookieOptions))
     } else {
@@ -74,7 +80,13 @@ class CognitoAuth {
     }
   }
 
-
+/**
+ * Signs the user in
+ * @param {string | undefined} USERNAME 
+ * @param {string | undefined} PASSWORD 
+ * @param {NextApiResponse} NextApiResponse 
+ * @returns 
+ */
 
   async signIn(USERNAME: string | undefined, PASSWORD: string | undefined, NextApiResponse: NextApiResponse): Promise<InitiateAuthCommandOutput> {
 
