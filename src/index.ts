@@ -16,6 +16,8 @@ import {
 
 } from '@aws-sdk/client-cognito-identity-provider'
 
+import cookie, { CookieSerializeOptions } from 'cookie'
+
 class CognitoAuth {
   private region: string | undefined;
 
@@ -50,11 +52,17 @@ class CognitoAuth {
 
   }
 
-  private setToken(token: string, expires?: number, NextApiResponse?: NextApiResponse) {
+  private setToken(token: string, expires: number, NextApiResponse?: NextApiResponse) {
+    const cookieOptions: CookieSerializeOptions = {
+      httpOnly: true,
+      path: '/',
+      sameSite: 'lax',
+      secure: process.env.VERCEL_ENV === 'production'
+    }
     if (NextApiResponse) {
-      NextApiResponse.setHeader('Set-Cookie', `${this.tokenName}=${token}; HttpOnly; Path=/; Max-Age=${expires}`)
+      NextApiResponse.setHeader('Set-Cookie', cookie.serialize(this.tokenName, token, cookieOptions))
     } else {
-      document.cookie = `${this.tokenName}=${token}; HttpOnly; Path=/; Max-Age=${expires}`
+      document.cookie = cookie.serialize(this.tokenName, token, cookieOptions)
     }
   }
 
@@ -68,7 +76,7 @@ class CognitoAuth {
 
 
 
-  async initiateAuth(USERNAME: string | undefined, PASSWORD: string | undefined, NextApiResponse: NextApiResponse): Promise<InitiateAuthCommandOutput> {
+  async signIn(USERNAME: string | undefined, PASSWORD: string | undefined, NextApiResponse: NextApiResponse): Promise<InitiateAuthCommandOutput> {
 
     if (!USERNAME) throw new Error('Missing username')
     if (!PASSWORD) throw new Error('Missing password')
@@ -82,7 +90,7 @@ class CognitoAuth {
       }
     }
     const initiateAuth = await this.client.initiateAuth(params)
-    initiateAuth.AuthenticationResult?.AccessToken && this.setToken(initiateAuth.AuthenticationResult.AccessToken, initiateAuth.AuthenticationResult.ExpiresIn, NextApiResponse)
+    initiateAuth.AuthenticationResult?.AccessToken && initiateAuth.AuthenticationResult?.ExpiresIn && this.setToken(initiateAuth.AuthenticationResult.AccessToken, initiateAuth.AuthenticationResult?.ExpiresIn, NextApiResponse)
     return await this.client.initiateAuth(params)
   }
 

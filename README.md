@@ -16,11 +16,70 @@ NEXT_COGNITO_ACCESS_KEY_ID=Your IAM access key that has cognito permissions
 NEXT_COGNITO_SECRET_ACCESS_KEY=You IAM seccress access key
 ```
 
+## Error handling
+
+Under the hood, this uses the Cognito SDK, which has it's own internal error handling response where the have their own [error codes](https://docs.aws.amazon.com/cognito-user-identity-pools/latest/APIReference/CommonErrors.html)
+
+Otherwise the Next Cognito error messages are related to missing environment variables or parameters
+
 ## Create your Next endpoint where you want to use NextCognito
-eg
-`/api/auth/signin`
+
 ```
 import "NextCognito" from "NextCognito"
 
-const new nextcognito = new NextCognito()
+const nextcognito = new NextCognito()
+```
+
+### Sign in
+```
+import "NextCognito" from "NextCognito"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+try {
+    await nextcognito.signIn(username, password, res)
+
+    //Handle the return how ever you like
+
+    return res.status(201).json({success: true})
+
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error})
+    }
+}
+```
+
+### Sign out
+```
+import "NextCognito" from "NextCognito"
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
+
+const nextcognito = new NextCognito()
+
+try {
+    await nextcognito.signOut(res, res)
+
+    //Handle the return how ever you like
+
+    return res.status(201).json({success: true})
+    
+} catch (error) {
+
+     //Handle the return how ever you like
+
+    return res.status(400).json({error})
+    }
+}
 ```
